@@ -36,16 +36,16 @@ steps:
 
 ### Inputs
 
-| Input            | Description                                | Required | Default   |
-| ---------------- | ------------------------------------------ | -------- | --------- |
-| `name`           | The name of the person to greet            | No       | `'World'` |
-| `greeting-type`  | The type of greeting (`formal` or `casual`)| No       | `'casual'`|
+| Input           | Description                                 | Required | Default    |
+| --------------- | ------------------------------------------- | -------- | ---------- |
+| `name`          | The name of the person to greet             | No       | `'World'`  |
+| `greeting-type` | The type of greeting (`formal` or `casual`) | No       | `'casual'` |
 
 ### Outputs
 
-| Output              | Description                              |
-| ------------------- | ---------------------------------------- |
-| `greeting-message`  | The personalized greeting message        |
+| Output             | Description                       |
+| ------------------ | --------------------------------- |
+| `greeting-message` | The personalized greeting message |
 
 ### Examples
 
