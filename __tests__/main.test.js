@@ -7,11 +7,11 @@
  */
 import { jest } from '@jest/globals'
 import * as core from '../__fixtures__/core.js'
-import { wait } from '../__fixtures__/wait.js'
+import { generateGreeting } from '../__fixtures__/greeting.js'
 
 // Mocks should be declared before the module being tested is imported.
 jest.unstable_mockModule('@actions/core', () => core)
-jest.unstable_mockModule('../src/wait.js', () => ({ wait }))
+jest.unstable_mockModule('../src/greeting.js', () => ({ generateGreeting }))
 
 // The module being tested should be imported dynamically. This ensures that the
 // mocks are used in place of any actual dependencies.
@@ -20,43 +20,57 @@ const { run } = await import('../src/main.js')
 describe('main.js', () => {
   beforeEach(() => {
     // Set the action's inputs as return values from core.getInput().
-    core.getInput.mockImplementation(() => '500')
+    core.getInput.mockImplementation((name) => {
+      switch (name) {
+        case 'name':
+          return 'GitHub'
+        case 'greeting-type':
+          return 'casual'
+        default:
+          return ''
+      }
+    })
 
-    // Mock the wait function so that it does not actually wait.
-    wait.mockImplementation(() => Promise.resolve('done!'))
+    // Mock the generateGreeting function
+    generateGreeting.mockImplementation(
+      () => 'Hey GitHub! Great to see you! 👋'
+    )
   })
 
   afterEach(() => {
     jest.resetAllMocks()
   })
 
-  it('Sets the time output', async () => {
+  it('Sets the greeting-message output', async () => {
     await run()
 
-    // Verify the time output was set.
+    // Verify the greeting-message output was set.
     expect(core.setOutput).toHaveBeenNthCalledWith(
       1,
-      'time',
-      // Simple regex to match a time string in the format HH:MM:SS.
-      expect.stringMatching(/^\d{2}:\d{2}:\d{2}/)
+      'greeting-message',
+      'Hey GitHub! Great to see you! 👋'
     )
   })
 
-  it('Sets a failed status', async () => {
-    // Clear the getInput mock and return an invalid value.
-    core.getInput.mockClear().mockReturnValueOnce('this is not a number')
+  it('Logs the greeting message', async () => {
+    await run()
 
-    // Clear the wait mock and return a rejected promise.
-    wait
-      .mockClear()
-      .mockRejectedValueOnce(new Error('milliseconds is not a number'))
+    // Verify that the greeting was logged
+    expect(core.info).toHaveBeenCalledWith('Hey GitHub! Great to see you! 👋')
+  })
+
+  it('Sets a failed status on error', async () => {
+    // Clear the generateGreeting mock and throw an error
+    generateGreeting.mockClear().mockImplementationOnce(() => {
+      throw new Error('Name must be a non-empty string')
+    })
 
     await run()
 
     // Verify that the action was marked as failed.
     expect(core.setFailed).toHaveBeenNthCalledWith(
       1,
-      'milliseconds is not a number'
+      'Name must be a non-empty string'
     )
   })
 })
