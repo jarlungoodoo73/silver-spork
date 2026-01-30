@@ -1,0 +1,27 @@
+name: JavaScript Action Template
+description:
+  A template for creating GitHub Actions using JavaScript with TypeScript-like
+  quality and comprehensive testing
+author: GitHub Actions Community
+
+# Add your action's branding here. This will appear on the GitHub Marketplace.
+branding:
+  icon: clock
+  color: blue
+
+# Define your inputs here.
+inputs:
+  milliseconds:
+    description: Number of milliseconds to wait (must be a non-negative integer)
+    required: true
+    default: '1000'
+
+# Define your outputs here.
+outputs:
+  time:
+    description:
+      The time when the wait completed (in format HH:MM:SS GMT+offset)
+
+runs:
+  using: node24
+  main: dist/index.js
