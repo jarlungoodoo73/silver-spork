@@ -27254,17 +27254,28 @@ function requireCore () {
 var coreExports = requireCore();
 
 /**
- * Waits for a number of milliseconds.
+ * Generates a personalized greeting message.
  *
- * @param {number} milliseconds The number of milliseconds to wait.
- * @returns {Promise<string>} Resolves with 'done!' after the wait is over.
+ * @param {string} name The name of the person to greet.
+ * @param {string} type The type of greeting (formal or casual).
+ * @returns {string} A personalized greeting message.
  */
-async function wait(milliseconds) {
-  return new Promise((resolve) => {
-    if (isNaN(milliseconds)) throw new Error('milliseconds is not a number')
+function generateGreeting(name, type = 'casual') {
+  if (!name || typeof name !== 'string') {
+    throw new Error('Name must be a non-empty string')
+  }
 
-    setTimeout(() => resolve('done!'), milliseconds);
-  })
+  const normalizedType = type.toLowerCase().trim();
+
+  if (normalizedType === 'formal') {
+    return `Good day, ${name}. It is a pleasure to meet you.`
+  } else if (normalizedType === 'casual') {
+    return `Hey ${name}! Great to see you! 👋`
+  } else {
+    throw new Error(
+      `Invalid greeting type: ${type}. Must be 'formal' or 'casual'`
+    )
+  }
 }
 
 /**
@@ -27274,18 +27285,21 @@ async function wait(milliseconds) {
  */
 async function run() {
   try {
-    const ms = coreExports.getInput('milliseconds');
+    const name = coreExports.getInput('name');
+    const greetingType = coreExports.getInput('greeting-type');
 
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    coreExports.debug(`Waiting ${ms} milliseconds ...`);
+    coreExports.debug(`Generating greeting for: ${name}`);
+    coreExports.debug(`Greeting type: ${greetingType}`);
 
-    // Log the current timestamp, wait, then log the new timestamp
-    coreExports.debug(new Date().toTimeString());
-    await wait(parseInt(ms, 10));
-    coreExports.debug(new Date().toTimeString());
+    // Generate the personalized greeting
+    const greetingMessage = generateGreeting(name, greetingType);
+
+    // Log the greeting message
+    coreExports.info(greetingMessage);
 
     // Set outputs for other workflow steps to use
-    coreExports.setOutput('time', new Date().toTimeString());
+    coreExports.setOutput('greeting-message', greetingMessage);
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) coreExports.setFailed(error.message);

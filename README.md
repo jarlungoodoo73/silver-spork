@@ -1,4 +1,4 @@
-# Create a GitHub Action Using JavaScript
+# Greeting Action
 
 [![GitHub Super-Linter](https://github.com/actions/javascript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/actions/javascript-action/actions/workflows/linter.yml)
 [![CI](https://github.com/actions/javascript-action/actions/workflows/ci.yml/badge.svg)](https://github.com/actions/javascript-action/actions/workflows/ci.yml)
@@ -6,10 +6,79 @@
 [![CodeQL](https://github.com/actions/javascript-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/actions/javascript-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
-Use this template to bootstrap the creation of a JavaScript action. :rocket:
+A friendly GitHub Action that generates personalized greetings! This action
+demonstrates how to create a JavaScript action with multiple inputs, conditional
+logic, and outputs.
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+## Features
+
+- 🎉 Generate personalized greeting messages
+- 🎭 Choose between formal and casual greeting styles
+- ✅ Comprehensive test coverage
+- 🚀 Built with modern JavaScript and GitHub Actions best practices
+
+## Usage
+
+Add this action to your workflow:
+
+```yaml
+steps:
+  - name: Generate Greeting
+    id: greet
+    uses: jarlungoodoo73/silver-spork@v1
+    with:
+      name: 'Alice'
+      greeting-type: 'casual'
+
+  - name: Print Greeting
+    run: echo "${{ steps.greet.outputs.greeting-message }}"
+```
+
+### Inputs
+
+| Input            | Description                                | Required | Default   |
+| ---------------- | ------------------------------------------ | -------- | --------- |
+| `name`           | The name of the person to greet            | No       | `'World'` |
+| `greeting-type`  | The type of greeting (`formal` or `casual`)| No       | `'casual'`|
+
+### Outputs
+
+| Output              | Description                              |
+| ------------------- | ---------------------------------------- |
+| `greeting-message`  | The personalized greeting message        |
+
+### Examples
+
+#### Casual Greeting (Default)
+
+```yaml
+- name: Casual Greeting
+  id: casual
+  uses: jarlungoodoo73/silver-spork@v1
+  with:
+    name: 'GitHub User'
+```
+
+Output: `Hey GitHub User! Great to see you! 👋`
+
+#### Formal Greeting
+
+```yaml
+- name: Formal Greeting
+  id: formal
+  uses: jarlungoodoo73/silver-spork@v1
+  with:
+    name: 'Dr. Smith'
+    greeting-type: 'formal'
+```
+
+Output: `Good day, Dr. Smith. It is a pleasure to meet you.`
+
+## Development
+
+This action serves as a template and example for creating JavaScript GitHub
+Actions. You can use this repository as a starting point for building your own
+actions.
 
 If you are new, there's also a simpler introduction in the
 [Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
@@ -64,10 +133,17 @@ need to perform some initial setup steps before you can develop your action.
    ```bash
    $ npm test
 
-   PASS  ./index.test.js
-     ✓ throws invalid number (3ms)
-     ✓ wait 500 ms (504ms)
-     ✓ test runs (95ms)
+   PASS  __tests__/greeting.test.js
+     greeting.js
+       ✓ Generates a casual greeting (6ms)
+       ✓ Generates a formal greeting (1ms)
+       ✓ Uses casual as default greeting type (1ms)
+
+   PASS  __tests__/main.test.js
+     main.js
+       ✓ Sets the greeting-message output (11ms)
+       ✓ Logs the greeting message (1ms)
+       ✓ Sets a failed status on error (1ms)
 
    ...
    ```
@@ -194,11 +270,12 @@ steps:
     id: test-action
     uses: ./
     with:
-      milliseconds: 1000
+      name: 'GitHub Actions'
+      greeting-type: 'casual'
 
   - name: Print Output
     id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
+    run: echo "${{ steps.test-action.outputs.greeting-message }}"
 ```
 
 For example workflow runs, check out the
@@ -225,11 +302,12 @@ steps:
     id: test-action
     uses: actions/javascript-action@v1 # Commit with the `v1` tag
     with:
-      milliseconds: 1000
+      name: 'GitHub User'
+      greeting-type: 'formal'
 
   - name: Print Output
     id: output
-    run: echo "${{ steps.test-action.outputs.time }}"
+    run: echo "${{ steps.test-action.outputs.greeting-message }}"
 ```
 
 ## Dependency License Management
